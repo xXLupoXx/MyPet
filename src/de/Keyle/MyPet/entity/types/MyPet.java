@@ -22,6 +22,7 @@ package de.Keyle.MyPet.entity.types;
 import de.Keyle.MyPet.entity.types.cavespider.MyCaveSpider;
 import de.Keyle.MyPet.entity.types.chicken.MyChicken;
 import de.Keyle.MyPet.entity.types.cow.MyCow;
+import de.Keyle.MyPet.entity.types.creeper.MyCreeper;
 import de.Keyle.MyPet.entity.types.irongolem.MyIronGolem;
 import de.Keyle.MyPet.entity.types.mooshroom.MyMooshroom;
 import de.Keyle.MyPet.entity.types.ocelot.MyOcelot;
@@ -76,6 +77,7 @@ public abstract class MyPet
         startHP.put(MyVillager.class, 20);
         startHP.put(MyWolf.class, 20);
         startHP.put(MyZombie.class, 20);
+        startHP.put(MyCreeper.class,20);
 
         startDamage.put(MyCaveSpider.class, 4);
         startDamage.put(MyChicken.class, 4);
@@ -92,6 +94,7 @@ public abstract class MyPet
         startDamage.put(MyVillager.class, 4);
         startDamage.put(MyWolf.class, 4);
         startDamage.put(MyZombie.class, 4);
+        startDamage.put(MyCreeper.class,4);
     }
 
     public static enum LeashFlag
@@ -215,7 +218,7 @@ public abstract class MyPet
                 net.minecraft.server.World mcWorld = ((CraftWorld) petLocation.getWorld()).getHandle();
                 EntityMyPet petEntity = getPetType().getNewEntityInstance(mcWorld, this);
                 petEntity.setLocation(petLocation);
-                if (MyPetUtil.canSpawn(petLocation, petEntity))
+                if (!MyPetUtil.canSpawn(petLocation, petEntity))
                 {
                     return false;
                 }
@@ -246,7 +249,7 @@ public abstract class MyPet
                 net.minecraft.server.World mcWorld = ((CraftWorld) loc.getWorld()).getHandle();
                 EntityMyPet petEntity = getPetType().getNewEntityInstance(mcWorld, this);
                 petEntity.setLocation(loc);
-                if (MyPetUtil.canSpawn(loc, petEntity))
+                if (!MyPetUtil.canSpawn(loc, petEntity))
                 {
                     return false;
                 }

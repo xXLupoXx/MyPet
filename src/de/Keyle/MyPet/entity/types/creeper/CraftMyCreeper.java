@@ -1,11 +1,29 @@
 package de.Keyle.MyPet.entity.types.creeper;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Kai
- * Date: 08.12.12
- * Time: 18:24
- * To change this template use File | Settings | File Templates.
- */
-public class CraftMyCreeper {
+import de.Keyle.MyPet.entity.types.CraftMyPet;
+import org.bukkit.craftbukkit.CraftServer;
+
+
+public class CraftMyCreeper extends CraftMyPet{
+
+    public CraftMyCreeper(CraftServer server, EntityMyCreeper entityMyCreeper)
+    {
+        super(server, entityMyCreeper);
+    }
+
+    public boolean isPowered()
+    {
+        return ((EntityMyCreeper) getHandle()).isPowered();
+    }
+
+    public void setPowered(boolean sheared)
+    {
+        ((EntityMyCreeper) getHandle()).setPowered(sheared);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "CraftMyCreeper{isPet=" + getHandle().isMyPet() + ",owner=" + getOwner() + ",powered=" + isPowered() +"}";
+    }
 }

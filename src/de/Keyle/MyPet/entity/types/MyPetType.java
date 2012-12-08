@@ -25,6 +25,8 @@ import de.Keyle.MyPet.entity.types.chicken.EntityMyChicken;
 import de.Keyle.MyPet.entity.types.chicken.MyChicken;
 import de.Keyle.MyPet.entity.types.cow.EntityMyCow;
 import de.Keyle.MyPet.entity.types.cow.MyCow;
+import de.Keyle.MyPet.entity.types.creeper.EntityMyCreeper;
+import de.Keyle.MyPet.entity.types.creeper.MyCreeper;
 import de.Keyle.MyPet.entity.types.irongolem.EntityMyIronGolem;
 import de.Keyle.MyPet.entity.types.irongolem.MyIronGolem;
 import de.Keyle.MyPet.entity.types.mooshroom.EntityMyMooshroom;
@@ -76,7 +78,8 @@ public enum MyPetType
     Slime(EntityType.SLIME, "Slime", EntityMySlime.class, MySlime.class),
     Spider(EntityType.SPIDER, "Spider", EntityMySpider.class, MySpider.class),
     Villager(EntityType.VILLAGER, "Villager", EntityMyVillager.class, MyVillager.class),
-    Zombie(EntityType.ZOMBIE, "Zombie", EntityMyZombie.class, MyZombie.class);
+    Zombie(EntityType.ZOMBIE, "Zombie", EntityMyZombie.class, MyZombie.class),
+    Creeper(EntityType.CREEPER,"Creeper", EntityMyCreeper.class,MyCreeper.class);
 
     private EntityType bukkitType;
     private String name;
