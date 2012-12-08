@@ -13,8 +13,8 @@ import de.Keyle.MyPet.skill.skills.Ride;
 import net.minecraft.server.*;
 
 
-public class EntityMyCreeper extends EntityMyPet {
-
+public class EntityMyCreeper extends EntityMyPet
+{
     public EntityMyCreeper(World world, MyPet myPet)
     {
         super(world, myPet);
@@ -60,25 +60,31 @@ public class EntityMyCreeper extends EntityMyPet {
         }
     }
 
-    public void setPowered(boolean powered) {
+    public void setPowered(boolean powered)
+    {
         if (!powered)
-            this.datawatcher.watch(17, new Byte((byte) 0));
+        {
+            this.datawatcher.watch(17, (byte) 0);
+        }
         else
-            this.datawatcher.watch(17, new Byte((byte) 1));
+        {
+            this.datawatcher.watch(17, (byte) 1);
+        }
+        ((MyCreeper) myPet).isPowered = powered;
     }
 
-    public boolean isPowered() {
+    public boolean isPowered()
+    {
         return this.datawatcher.getByte(17) == 1;
     }
 
     // Obfuscated Methods -------------------------------------------------------------------------------------------
 
-
     protected void a()
     {
         super.a();
-        this.datawatcher.a(16, new Byte((byte) -1)); // n.A
-        this.datawatcher.a(17, new Byte((byte) 0));     // powered
+        this.datawatcher.a(16, new Byte((byte) -1)); // N/A
+        this.datawatcher.a(17, new Byte((byte) 0));  // powered
     }
 
     @Override

@@ -4,8 +4,8 @@ import de.Keyle.MyPet.entity.types.CraftMyPet;
 import org.bukkit.craftbukkit.CraftServer;
 
 
-public class CraftMyCreeper extends CraftMyPet{
-
+public class CraftMyCreeper extends CraftMyPet
+{
     public CraftMyCreeper(CraftServer server, EntityMyCreeper entityMyCreeper)
     {
         super(server, entityMyCreeper);
@@ -24,6 +24,6 @@ public class CraftMyCreeper extends CraftMyPet{
     @Override
     public String toString()
     {
-        return "CraftMyCreeper{isPet=" + getHandle().isMyPet() + ",owner=" + getOwner() + ",powered=" + isPowered() +"}";
+        return "CraftMyCreeper{isPet=" + getHandle().isMyPet() + ",owner=" + getOwner() + ",powered=" + isPowered() + "}";
     }
 }

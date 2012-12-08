@@ -65,6 +65,7 @@ public abstract class MyPet
         startHP.put(MyCaveSpider.class, 20);
         startHP.put(MyChicken.class, 20);
         startHP.put(MyCow.class, 20);
+        startHP.put(MyCreeper.class, 20);
         startHP.put(MyIronGolem.class, 20);
         startHP.put(MyMooshroom.class, 20);
         startHP.put(MyOcelot.class, 20);
@@ -82,6 +83,7 @@ public abstract class MyPet
         startDamage.put(MyCaveSpider.class, 4);
         startDamage.put(MyChicken.class, 4);
         startDamage.put(MyCow.class, 4);
+        startDamage.put(MyCreeper.class, 0);
         startDamage.put(MyIronGolem.class, 4);
         startDamage.put(MyMooshroom.class, 4);
         startDamage.put(MyOcelot.class, 4);
