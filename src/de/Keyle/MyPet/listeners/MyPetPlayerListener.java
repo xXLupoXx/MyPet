@@ -183,12 +183,22 @@ public class MyPetPlayerListener implements Listener
                         if (!myPet.getCraftPet().canMove())
                         {
                             myPet.removePet();
+                            myPet.sendMessageToOwner(MyPetUtil.setColors(MyPetLanguage.getString("Msg_Despawn")).replace("%petname%", myPet.petName));
                         }
                         else
                         {
                             myPet.removePet();
-                            myPet.setLocation(event.getTo());
-                            myPet.createPet();
+                            if (MyPetUtil.canSpawn(event.getTo(), myPet.getCraftPet().getHandle()))
+                            {
+                                myPet.setLocation(event.getTo());
+                                myPet.createPet();
+                            }
+                            else
+                            {
+                                myPet.sendMessageToOwner(MyPetUtil.setColors(MyPetLanguage.getString("Msg_SpawnNoSpace")).replace("%petname%", myPet.petName));
+                            }
+
+
                         }
                     }
                 }
