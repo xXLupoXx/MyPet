@@ -35,6 +35,7 @@ import de.Keyle.MyPet.skill.skills.Poison;
 import de.Keyle.MyPet.util.*;
 import net.minecraft.server.NBTTagCompound;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.entity.CraftEnderman;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftWolf;
 import org.bukkit.entity.*;
@@ -252,6 +253,11 @@ public class MyPetEntityListener implements Listener
                             else if (leashTarget instanceof Ageable)
                             {
                                 extendedInfo.setBoolean("Baby", !((Ageable) leashTarget).isAdult());
+                            }
+                            else if (leashTarget instanceof Enderman)
+                            {
+                                extendedInfo.setShort("BlockID", (short)((CraftEnderman) leashTarget).getHandle().getCarriedId());
+                                extendedInfo.setShort("BlockData", (short)((CraftEnderman) leashTarget).getHandle().getCarriedData());
                             }
                             inactiveMyPet.setInfo(extendedInfo);
 
