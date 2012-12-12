@@ -17,67 +17,68 @@
  * along with MyPet. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.Keyle.MyPet.entity.types.slime;
+package de.Keyle.MyPet.entity.types.bat;
 
 import de.Keyle.MyPet.entity.types.MyPet;
 import de.Keyle.MyPet.entity.types.MyPetType;
 import de.Keyle.MyPet.util.MyPetPlayer;
 import net.minecraft.server.NBTTagCompound;
 
-public class MySlime extends MyPet
-{
-    protected int size = 1;
 
-    public MySlime(MyPetPlayer petOwner)
+public class MyBat extends MyPet
+{
+    boolean hanging = false;
+
+    public MyBat(MyPetPlayer petOwner)
     {
         super(petOwner);
-        this.petName = "Slime";
+        this.petName = "Bat";
     }
 
-    public int getSize()
+    public void setHanging(boolean flag)
     {
         if (status == PetState.Here)
         {
-            return ((CraftMySlime) getCraftPet()).getSize();
+            ((CraftMyBat) getCraftPet()).setHanging(flag);
+        }
+        this.hanging = flag;
+    }
+
+    public boolean ishanging()
+    {
+        if (status == PetState.Here)
+        {
+            return ((CraftMyBat) getCraftPet()).isHanging();
         }
         else
         {
-            return size;
+            return hanging;
         }
-    }
-
-    public void setSize(int value)
-    {
-        if (status == PetState.Here)
-        {
-            ((CraftMySlime) getCraftPet()).setSize(value);
-        }
-        this.size = value;
     }
 
     @Override
     public NBTTagCompound getExtendedInfo()
     {
         NBTTagCompound info = new NBTTagCompound("Info");
-        info.setInt("Size", getSize());
+        info.setBoolean("Hanging", ishanging());
         return info;
     }
 
     @Override
     public void setExtendedInfo(NBTTagCompound info)
     {
-        setSize(info.getInt("Size"));
+        setHanging(info.getBoolean("Hanging"));
     }
 
     @Override
     public MyPetType getPetType()
     {
-        return MyPetType.Slime;
+        return MyPetType.Bat;
     }
 
     @Override
     public String toString()
     {
-        return "MySlime{owner=" + getOwner().getName() + ", name=" + petName + ", exp=" + experience.getExp() + "/" + experience.getRequiredExp() + ", lv=" + experience.getLevel() + ", status=" + status.name() + ", skilltree=" + skillTree.getName() + ", size=" + getSize() + "}";
+        return "MyBat{owner=" + getOwner().getName() + ", name=" + petName + ", exp=" + experience.getExp() + "/" + experience.getRequiredExp() + ", lv=" + experience.getLevel() + ", status=" + status.name() + ", skilltree=" + skillTree.getName() + ",hanging=" + ishanging() + "}";
     }
 }

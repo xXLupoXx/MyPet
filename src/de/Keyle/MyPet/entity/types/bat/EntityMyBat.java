@@ -17,7 +17,7 @@
  * along with MyPet. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.Keyle.MyPet.entity.types.magmacube;
+package de.Keyle.MyPet.entity.types.bat;
 
 import de.Keyle.MyPet.entity.pathfinder.movement.PathfinderGoalControl;
 import de.Keyle.MyPet.entity.pathfinder.movement.PathfinderGoalFollowOwner;
@@ -29,24 +29,19 @@ import de.Keyle.MyPet.entity.pathfinder.target.PathfinderGoalOwnerHurtByTarget;
 import de.Keyle.MyPet.entity.pathfinder.target.PathfinderGoalOwnerHurtTarget;
 import de.Keyle.MyPet.entity.types.EntityMyPet;
 import de.Keyle.MyPet.entity.types.MyPet;
-import de.Keyle.MyPet.entity.types.slime.MySlime;
 import de.Keyle.MyPet.skill.skills.Ride;
 import net.minecraft.server.*;
 
-public class EntityMyMagmaCube extends EntityMyPet
-{
-    int jumpDelay;
-    PathEntity lastPathEntity = null;
 
-    public EntityMyMagmaCube(World world, MyPet myPet)
+public class EntityMyBat extends EntityMyPet
+{
+    public EntityMyBat(World world, MyPet myPet)
     {
         super(world, myPet);
-        this.texture = "/mob/lava.png";
-        this.walkSpeed = 0.25F;
+        this.texture = "/mob/bat.png";
 
-        petPathfinderSelector.addGoal("Float", new PathfinderGoalFloat(this));
         petPathfinderSelector.addGoal("Ride", new PathfinderGoalRide(this, this.walkSpeed + 0.15F, Ride.speedPerLevel));
-        if (MyPet.getStartDamage(MySlime.class) > 0)
+        if (MyPet.getStartDamage(MyBat.class) > 0)
         {
             petPathfinderSelector.addGoal("LeapAtTarget", new PathfinderGoalLeapAtTarget(this, this.walkSpeed + 0.1F));
             petPathfinderSelector.addGoal("MeleeAttack", new PathfinderGoalMeleeAttack(this, this.walkSpeed, 3, 20));
@@ -63,43 +58,43 @@ public class EntityMyMagmaCube extends EntityMyPet
         petPathfinderSelector.addGoal("RandomLockaround", new PathfinderGoalRandomLookaround(this));
     }
 
+    @Override
+    public org.bukkit.entity.Entity getBukkitEntity()
+    {
+        if (this.bukkitEntity == null)
+        {
+            this.bukkitEntity = new CraftMyBat(this.world.getServer(), this);
+        }
+        return this.bukkitEntity;
+    }
+
     public void setMyPet(MyPet myPet)
     {
         if (myPet != null)
         {
             super.setMyPet(myPet);
 
-            setSize(((MyMagmaCube) myPet).getSize());
+            this.setHanging(((MyBat) myPet).ishanging());
         }
     }
 
-    public int getSize()
+    public void setHanging(boolean flags)
     {
-        return this.datawatcher.getByte(16);
-    }
-
-    public void setSize(int value)
-    {
-        this.datawatcher.watch(16, (byte) value);
-        Float[] entitySize = MyPet.getEntitySize(MyMagmaCube.class);
-        this.a(entitySize[0] * value, entitySize[1] * value);
-        this.aV = value;
-        ((MyMagmaCube) myPet).size = value;
-    }
-
-    public boolean isBurning()
-    {
-        return false;
-    }
-
-    @Override
-    public org.bukkit.entity.Entity getBukkitEntity()
-    {
-        if (this.bukkitEntity == null)
+        int i = this.datawatcher.getByte(16);
+        if (flags)
         {
-            this.bukkitEntity = new CraftMyMagmaCube(this.world.getServer(), this);
+            this.datawatcher.watch(16, (byte) (i | 0x1));
         }
-        return this.bukkitEntity;
+        else
+        {
+            this.datawatcher.watch(16, (byte) (i & 0xFFFFFFFE));
+        }
+        ((MyBat) myPet).hanging = flags;
+    }
+
+    public boolean isHanging()
+    {
+        return (this.datawatcher.getByte(16) & 0x1) != 0;
     }
 
     // Obfuscated Methods -------------------------------------------------------------------------------------------
@@ -107,15 +102,13 @@ public class EntityMyMagmaCube extends EntityMyPet
     protected void a()
     {
         super.a();
-        this.datawatcher.a(16, new Byte((byte) 1)); //size
+        this.datawatcher.a(16, new Byte((byte) 0)); // hanging
     }
 
-    /**
-     * Returns the default sound of the MyPet
-     */
+    @Override
     protected String aY()
     {
-        return "";
+        return "mob.bat.idle";
     }
 
     /**
@@ -124,7 +117,7 @@ public class EntityMyMagmaCube extends EntityMyPet
     @Override
     protected String aZ()
     {
-        return ba();
+        return "mob.bat.hurt";
     }
 
     /**
@@ -133,23 +126,13 @@ public class EntityMyMagmaCube extends EntityMyPet
     @Override
     protected String ba()
     {
-        return "mob.magmacube." + (getSize() > 1 ? "big" : "small");
+        return "mob.bat.death";
     }
 
-    /**
-     * Method is called when pet moves
-     * Is used to create the hopping motion
-     */
     public void j_()
     {
         super.j_();
-
-        if (this.onGround && jumpDelay-- <= 0 && lastPathEntity != getNavigation().d())
-        {
-            getControllerJump().a();
-            jumpDelay = (this.random.nextInt(20) + 10);
-            lastPathEntity = getNavigation().d();
-            makeSound("mob.magmacube." + (getSize() > 1 ? "big" : "small"), aX(), ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) / 0.8F);
-        }
+        this.motY *= 0.6000000238418579D;
+        this.locY += 0.65;
     }
 }
