@@ -19,6 +19,9 @@
 
 package de.Keyle.MyPet.util;
 
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.party.HeroParty;
 import com.massivecraft.factions.P;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 import com.palmergames.bukkit.towny.object.TownyWorld;
@@ -33,16 +36,19 @@ import de.Keyle.MyPet.util.logger.DebugLogger;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.minecraft.server.AxisAlignedBB;
+import net.minecraft.server.Block;
 import net.minecraft.server.Entity;
-import net.minecraft.server.World;
+import net.minecraft.server.MathHelper;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.util.UnsafeList;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -122,7 +128,7 @@ public class MyPetUtil
 
     public static boolean canHurt(Player petOwner, Player victim)
     {
-        return canHurtCitizens(victim) && canHurtFactions(petOwner, victim) && canHurtTowny(petOwner, victim) && canHurtWorldGuard(victim) && victim.getGameMode() != GameMode.CREATIVE && victim.getWorld().getPVP();
+        return canHurtCitizens(victim) && canHurtFactions(petOwner, victim) && canHurtTowny(petOwner, victim) && canHurtWorldGuard(victim) && canHurtHeroes(petOwner, victim) && victim.getGameMode() != GameMode.CREATIVE && victim.getWorld().getPVP();
     }
 
     public static boolean canHurtCitizens(Player victim)
@@ -206,6 +212,34 @@ public class MyPetUtil
         return canHurt;
     }
 
+    public static boolean canHurtHeroes(Player attacker, Player victim)
+    {
+        if (MyPetConfig.useHeroes && MyPetUtil.getServer().getPluginManager().isPluginEnabled("Heroes"))
+        {
+            Heroes heroesPlugin = (Heroes) getServer().getPluginManager().getPlugin("Heroes");
+
+            Hero heroAttacker = heroesPlugin.getCharacterManager().getHero(attacker);
+            Hero heroDefender = heroesPlugin.getCharacterManager().getHero(victim);
+            int attackerLevel = heroAttacker.getTieredLevel(false);
+            int defenderLevel = heroDefender.getTieredLevel(false);
+
+            if (Math.abs(attackerLevel - defenderLevel) > Heroes.properties.pvpLevelRange)
+            {
+                return false;
+            }
+            if ((defenderLevel < Heroes.properties.minPvpLevel) || (attackerLevel < Heroes.properties.minPvpLevel))
+            {
+                return false;
+            }
+            HeroParty party = heroDefender.getParty();
+            if ((party != null) && (party.isNoPvp()) && party.isPartyMember(heroAttacker))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static void sendMessage(Player player, String Message)
     {
         if (player != null && player.isOnline())
@@ -237,10 +271,46 @@ public class MyPetUtil
 
     public static Boolean canSpawn(Location loc, Entity entity)
     {
-        World world = ((CraftWorld) loc.getWorld()).getHandle();
-        float halfEntityWidth = entity.width / 2;
-        AxisAlignedBB bb = AxisAlignedBB.a(loc.getX() - halfEntityWidth, loc.getY() - entity.height, loc.getZ() - halfEntityWidth, loc.getX() + halfEntityWidth, loc.getY() - entity.height + entity.length, loc.getZ() + halfEntityWidth);
+        return canSpawn(loc, entity.width, entity.height, entity.length);
+    }
 
-        return world.getCubes(entity, bb).isEmpty() && !world.containsLiquid(bb);
+    public static Boolean canSpawn(Location loc, float width, float height, float length)
+    {
+        net.minecraft.server.World mcWorld = ((CraftWorld) loc.getWorld()).getHandle();
+        float halfEntityWidth = width / 2;
+        AxisAlignedBB bb = AxisAlignedBB.a(loc.getX() - halfEntityWidth, loc.getY() - height, loc.getZ() - halfEntityWidth, loc.getX() + halfEntityWidth, loc.getY() - height + length, loc.getZ() + halfEntityWidth);
+
+        return getBlockBBsInBB(loc.getWorld(), bb).isEmpty() && !mcWorld.containsLiquid(bb);
+    }
+
+    public static List getBlockBBsInBB(World world, AxisAlignedBB axisalignedbb)
+    {
+        UnsafeList unsafeList = new UnsafeList();
+        int minX = MathHelper.floor(axisalignedbb.a);
+        int maxX = MathHelper.floor(axisalignedbb.d + 1.0D);
+        int minY = MathHelper.floor(axisalignedbb.b);
+        int maxY = MathHelper.floor(axisalignedbb.e + 1.0D);
+        int minZ = MathHelper.floor(axisalignedbb.c);
+        int maxZ = MathHelper.floor(axisalignedbb.f + 1.0D);
+
+        for (int x = minX ; x < maxX ; x++)
+        {
+            for (int z = minZ ; z < maxZ ; z++)
+            {
+                if (world.getChunkAt(x, z).isLoaded())
+                {
+                    for (int y = minY - 1 ; y < maxY ; y++)
+                    {
+                        Block block = Block.byId[world.getBlockAt(x, y, z).getTypeId()];
+
+                        if (block != null)
+                        {
+                            block.a(((CraftWorld) world).getHandle(), x, y, z, axisalignedbb, unsafeList, null);
+                        }
+                    }
+                }
+            }
+        }
+        return unsafeList;
     }
 }

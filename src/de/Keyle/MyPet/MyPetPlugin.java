@@ -30,6 +30,7 @@ import de.Keyle.MyPet.entity.types.cavespider.EntityMyCaveSpider;
 import de.Keyle.MyPet.entity.types.chicken.EntityMyChicken;
 import de.Keyle.MyPet.entity.types.cow.EntityMyCow;
 import de.Keyle.MyPet.entity.types.creeper.EntityMyCreeper;
+import de.Keyle.MyPet.entity.types.enderman.EntityMyEnderman;
 import de.Keyle.MyPet.entity.types.irongolem.EntityMyIronGolem;
 import de.Keyle.MyPet.entity.types.mooshroom.EntityMyMooshroom;
 import de.Keyle.MyPet.entity.types.ocelot.EntityMyOcelot;
@@ -96,6 +97,7 @@ public class MyPetPlugin extends JavaPlugin
         getTimer().stopTimer();
         MyPetList.clearList();
         getPlugin().getServer().getScheduler().cancelTasks(getPlugin());
+        HeroesDamageFix.reset();
         debugLogger.info("MyPet disabled!");
     }
 
@@ -115,18 +117,25 @@ public class MyPetPlugin extends JavaPlugin
 
         debugLogger = new DebugLogger(MyPetConfig.debugLogger);
 
+        String mcVs = getDescription().getVersion();
+        mcVs = mcVs.substring(mcVs.indexOf('(') + 1, mcVs.indexOf(')'));
+
+        String mcV = getServer().getVersion();
+        mcV = mcV.substring(mcV.indexOf("(MC: ") + 1, mcV.indexOf(')'));
+
+        String mpV = getDescription().getVersion();
+        mpV = mpV.substring(0, mpV.indexOf(' '));
+
         if (!checkVersion(getServer().getVersion(), getDescription().getVersion()))
         {
-            String mpv = getDescription().getVersion();
-            mpv = getDescription().getVersion().substring(mpv.indexOf('(') + 1, mpv.indexOf(')'));
             MyPetUtil.getLogger().warning("---------------------------------------------------------");
             MyPetUtil.getLogger().warning("This version of MyPet only work with:");
-            MyPetUtil.getLogger().warning("   Minecraft " + mpv);
+            MyPetUtil.getLogger().warning("   Minecraft " + mcVs);
             MyPetUtil.getLogger().warning("MyPet disabled!");
             MyPetUtil.getLogger().warning("---------------------------------------------------------");
             MyPetUtil.getDebugLogger().warning("---------------------------------------------------------");
             MyPetUtil.getDebugLogger().warning("This version of MyPet only work with:");
-            MyPetUtil.getDebugLogger().warning("   Minecraft " + mpv);
+            MyPetUtil.getDebugLogger().warning("   Minecraft " + mcVs);
             MyPetUtil.getDebugLogger().warning("MyPet disabled!");
             MyPetUtil.getDebugLogger().warning("---------------------------------------------------------");
             this.setEnabled(false);
@@ -136,6 +145,24 @@ public class MyPetPlugin extends JavaPlugin
         debugLogger.info("----------- loading MyPet ... -----------");
         debugLogger.info("MyPet " + getDescription().getVersion());
         debugLogger.info("Bukkit " + getServer().getVersion());
+
+        UpdateCheck updateCheck = new UpdateCheck();
+        if (MyPetConfig.checkForUpdates)
+        {
+            if (updateCheck.isUpdateAvailable(mcV, mpV))
+            {
+                MyPetUtil.getLogger().info("Update available!: " + updateCheck.getLastAvailableUpdate().getTitle());
+                MyPetUtil.getDebugLogger().info("Update available!: " + updateCheck.getLastAvailableUpdate().getTitle());
+            }
+            else
+            {
+                MyPetUtil.getDebugLogger().info("No Update available");
+            }
+        }
+        else
+        {
+            MyPetUtil.getDebugLogger().info("Updates not activated");
+        }
 
         MyPetUtil.getDebugLogger().info("MobEXP table: -------------------------");
         for (EntityType ET : MyPetExperience.mobExp.keySet())
@@ -230,6 +257,8 @@ public class MyPetPlugin extends JavaPlugin
             a.invoke(a, EntitySlime.class, "Slime", 55);
             a.invoke(a, EntityMyPigZombie.class, "PigZombie", 57);
             a.invoke(a, EntityPigZombie.class, "PigZombie", 57);
+            a.invoke(a, EntityMyEnderman.class, "Enderman", 58);
+            a.invoke(a, EntityEnderman.class, "Enderman", 58);
             a.invoke(a, EntityMyCaveSpider.class, "CaveSpider", 59);
             a.invoke(a, EntityCaveSpider.class, "CaveSpider", 59);
             a.invoke(a, EntityMySilverfish.class, "Silverfish", 60);
@@ -252,7 +281,6 @@ public class MyPetPlugin extends JavaPlugin
             a.invoke(a, EntityIronGolem.class, "VillagerGolem", 99);
             a.invoke(a, EntityMyVillager.class, "Villager", 120);
             a.invoke(a, EntityVillager.class, "Villager", 120);
-
 
             debugLogger.info("registered MyPet entities.");
         }
@@ -528,13 +556,13 @@ public class MyPetPlugin extends JavaPlugin
         return petCount;
     }
 
-    private boolean checkVersion(String mc, String mw)
+    private boolean checkVersion(String mc, String mp)
     {
-        mw = mw.substring(mw.indexOf('(') + 1, mw.indexOf(')'));
+        mp = mp.substring(mp.indexOf('(') + 1, mp.indexOf(')'));
         mc = mc.substring(mc.indexOf("(MC: ") + 5, mc.indexOf(')'));
-        if (mw.contains("/"))
+        if (mp.contains("/"))
         {
-            String[] temp = mw.split("/");
+            String[] temp = mp.split("/");
             for (String v : temp)
             {
                 if (v.equals(mc))
@@ -546,7 +574,7 @@ public class MyPetPlugin extends JavaPlugin
         }
         else
         {
-            return mw.equals(mc);
+            return mp.equals(mc);
         }
     }
 

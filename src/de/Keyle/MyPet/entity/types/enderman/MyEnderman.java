@@ -6,7 +6,8 @@ import de.Keyle.MyPet.entity.types.MyPetType;
 import de.Keyle.MyPet.util.MyPetPlayer;
 import net.minecraft.server.NBTTagCompound;
 
-public class MyEnderman extends MyPet{
+public class MyEnderman extends MyPet
+{
 
     short BlockID = 0;
     short BlockData = 0;
@@ -16,25 +17,6 @@ public class MyEnderman extends MyPet{
     {
         super(petOwner);
         this.petName = "Enderman";
-    }
-
-
-    public void setBlockData(short flag)
-    {
-        if (status == PetState.Here)
-        {
-            ((CraftMyEnderman) getCraftPet()).setBlockData(flag);
-        }
-        this.BlockData = flag;
-    }
-
-    public void setBlockID(short flag)
-    {
-        if (status == PetState.Here)
-        {
-            ((CraftMyEnderman) getCraftPet()).setBlockID(flag);
-        }
-        this.BlockID = flag;
     }
 
     public short getBlockID()
@@ -49,14 +31,13 @@ public class MyEnderman extends MyPet{
         }
     }
 
-
-    public void setScreaming(boolean flag)
+    public void setBlockID(short flag)
     {
         if (status == PetState.Here)
         {
-            ((CraftMyEnderman) getCraftPet()).setScreaming(flag);
+            ((CraftMyEnderman) getCraftPet()).setBlockID(flag);
         }
-        this.isScreaming = flag;
+        this.BlockID = flag;
     }
 
     public short getBlockData()
@@ -71,6 +52,15 @@ public class MyEnderman extends MyPet{
         }
     }
 
+    public void setBlockData(short flag)
+    {
+        if (status == PetState.Here)
+        {
+            ((CraftMyEnderman) getCraftPet()).setBlockData(flag);
+        }
+        this.BlockData = flag;
+    }
+
     public boolean isScreaming()
     {
         if (status == PetState.Here)
@@ -83,13 +73,22 @@ public class MyEnderman extends MyPet{
         }
     }
 
+    public void setScreaming(boolean flag)
+    {
+        if (status == PetState.Here)
+        {
+            ((CraftMyEnderman) getCraftPet()).setScreaming(flag);
+        }
+        this.isScreaming = flag;
+    }
+
     @Override
     public NBTTagCompound getExtendedInfo()
     {
         NBTTagCompound info = new NBTTagCompound("Info");
         info.setShort("BlockID", getBlockID());
-        info.setShort("BlockData",getBlockData());
-        info.setBoolean("Screaming", isScreaming());
+        info.setShort("BlockData", getBlockData());
+        //info.setBoolean("Screaming", isScreaming());
         return info;
     }
 
@@ -98,7 +97,7 @@ public class MyEnderman extends MyPet{
     {
         setBlockID(info.getShort("BlockID"));
         setBlockData(info.getShort("BlockData"));
-        setScreaming(info.getBoolean("Screaming"));
+        //setScreaming(info.getBoolean("Screaming"));
     }
 
     @Override
@@ -110,7 +109,7 @@ public class MyEnderman extends MyPet{
     @Override
     public String toString()
     {
-        return "MyEnderman{owner=" + getOwner().getName() + ", name=" + petName + ", exp=" + experience.getExp() + "/" + experience.getRequiredExp() + ", lv=" + experience.getLevel() + ", status=" + status.name() + ", skilltree=" + skillTree.getName() + ",BlockID=" + getBlockID() + ",BlockData=" +getBlockData()+ "}";
+        return "MyEnderman{owner=" + getOwner().getName() + ", name=" + petName + ", exp=" + experience.getExp() + "/" + experience.getRequiredExp() + ", lv=" + experience.getLevel() + ", status=" + status.name() + ", skilltree=" + skillTree.getName() + ",BlockID=" + getBlockID() + ",BlockData=" + getBlockData() + "}";
     }
 
 }

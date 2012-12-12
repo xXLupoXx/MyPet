@@ -10,7 +10,6 @@ import de.Keyle.MyPet.entity.pathfinder.target.PathfinderGoalOwnerHurtByTarget;
 import de.Keyle.MyPet.entity.pathfinder.target.PathfinderGoalOwnerHurtTarget;
 import de.Keyle.MyPet.entity.types.EntityMyPet;
 import de.Keyle.MyPet.entity.types.MyPet;
-import de.Keyle.MyPet.entity.types.creeper.CraftMyCreeper;
 import de.Keyle.MyPet.entity.types.creeper.MyCreeper;
 import de.Keyle.MyPet.skill.skills.Ride;
 import net.minecraft.server.*;
@@ -22,7 +21,6 @@ public class EntityMyEnderman extends EntityMyPet
     {
         super(world, myPet);
         this.texture = "/mob/enderman.png";
-        this.a(0.6F, 2.9F);
 
         petPathfinderSelector.addGoal("Float", new PathfinderGoalFloat(this));
         petPathfinderSelector.addGoal("Ride", new PathfinderGoalRide(this, this.walkSpeed + 0.15F, Ride.speedPerLevel));
@@ -43,6 +41,51 @@ public class EntityMyEnderman extends EntityMyPet
         petPathfinderSelector.addGoal("RandomLockaround", new PathfinderGoalRandomLookaround(this));
     }
 
+    public void setMyPet(MyPet myPet)
+    {
+        if (myPet != null)
+        {
+            super.setMyPet(myPet);
+
+            this.setScreaming(((MyEnderman) myPet).isScreaming());
+            this.setBlockID(((MyEnderman) myPet).getBlockID());
+            this.setBlockData(((MyEnderman) myPet).getBlockData());
+        }
+    }
+
+    public short getBlockID()
+    {
+        return (short) this.datawatcher.getByte(16);
+    }
+
+    public void setBlockID(short blockID)
+    {
+        this.datawatcher.watch(16, (byte) (blockID & 0xFF));
+        ((MyEnderman) myPet).BlockID = blockID;
+    }
+
+    public boolean isScreaming()
+    {
+        return this.datawatcher.getByte(18) == 1;
+    }
+
+    public void setScreaming(boolean screaming)
+    {
+        this.datawatcher.watch(18, (byte) (screaming ? 1 : 0));
+        ((MyEnderman) myPet).isScreaming = screaming;
+    }
+
+    public short getBlockData()
+    {
+        return (short) this.datawatcher.getByte(17);
+    }
+
+    public void setBlockData(short blockData)
+    {
+        this.datawatcher.watch(17, (byte) (blockData & 0xFF));
+        ((MyEnderman) myPet).BlockData = blockData;
+    }
+
     @Override
     public org.bukkit.entity.Entity getBukkitEntity()
     {
@@ -53,58 +96,6 @@ public class EntityMyEnderman extends EntityMyPet
         return this.bukkitEntity;
     }
 
-    public void setMyPet(MyPet myPet)
-    {
-        if (myPet != null)
-        {
-            super.setMyPet(myPet);
-
-            this.setScreaming(((MyEnderman) myPet).isScreaming());
-            this.setBlockID(((MyEnderman)myPet).getBlockID());
-            this.setBlockData(((MyEnderman)myPet).getBlockData());
-        }
-    }
-
-    public void setScreaming(boolean screaming)
-    {
-        if (!screaming)
-        {
-            this.datawatcher.watch(18, (byte) 0);
-        }
-        else
-        {
-            this.datawatcher.watch(18, (byte) 1);
-        }
-        ((MyEnderman) myPet).isScreaming = screaming;
-    }
-
-    public boolean isScreaming()
-    {
-        return this.datawatcher.getByte(18) == 1;
-    }
-
-    public void setBlockData(short blockData)
-    {
-        this.datawatcher.watch(17,(byte)(blockData & 0xFF));
-        ((MyEnderman)myPet).BlockData = blockData;
-    }
-
-    public void setBlockID(short blockID)
-    {
-        this.datawatcher.watch(16,(byte)(blockID & 0xFF));
-        ((MyEnderman)myPet).BlockID = blockID;
-    }
-
-    public short getBlockID()
-    {
-        return (short)this.datawatcher.getByte(16);
-    }
-
-    public short getBlockData()
-    {
-        return (short)this.datawatcher.getByte(17);
-    }
-
     // Obfuscated Methods -------------------------------------------------------------------------------------------
 
     protected void a()
@@ -113,7 +104,55 @@ public class EntityMyEnderman extends EntityMyPet
         this.datawatcher.a(16, new Byte((byte) 0));  // BlockID
         this.datawatcher.a(17, new Byte((byte) 0));  // BlockData
         this.datawatcher.a(18, new Byte((byte) 0));  // Face(angry)
+    }
 
+    /**
+     * Is called when player rightclicks this MyPet
+     * return:
+     * true: there was a reaction on rightclick
+     * false: no reaction on rightclick
+     */
+    public boolean a(EntityHuman entityhuman)
+    {
+        if (super.a(entityhuman))
+        {
+            return true;
+        }
+
+        ItemStack itemStack = entityhuman.inventory.getItemInHand();
+
+        if (entityhuman == getOwner() && itemStack != null)
+        {
+            if (itemStack.id == Item.SHEARS.id)
+            {
+                if (itemStack.getData() == 11 && getBlockData() != 0)
+                {
+                    EntityItem entityitem = this.a(new ItemStack(getBlockID(), 1, getBlockData()), 1.0F);
+                    entityitem.motY += (double) (this.random.nextFloat() * 0.05F);
+                    entityitem.motX += (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.1F);
+                    entityitem.motZ += (double) ((this.random.nextFloat() - this.random.nextFloat()) * 0.1F);
+
+                    setBlockID((short) 0);
+                    setBlockData((short) 0);
+
+                    return true;
+                }
+            }
+            else if (getBlockID() <= 0 && itemStack.id > 0 && itemStack.id < 256)
+            {
+                setBlockID((short) itemStack.id);
+                setBlockData((short) itemStack.getData());
+                if (!entityhuman.abilities.canInstantlyBuild)
+                {
+                    --itemStack.count;
+                }
+                if (itemStack.count <= 0)
+                {
+                    entityhuman.inventory.setItem(entityhuman.inventory.itemInHandIndex, null);
+                }
+            }
+        }
+        return false;
     }
 
     @Override

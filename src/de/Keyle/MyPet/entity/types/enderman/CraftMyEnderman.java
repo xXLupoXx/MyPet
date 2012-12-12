@@ -1,7 +1,6 @@
 package de.Keyle.MyPet.entity.types.enderman;
 
 import de.Keyle.MyPet.entity.types.CraftMyPet;
-import de.Keyle.MyPet.entity.types.creeper.EntityMyCreeper;
 import org.bukkit.craftbukkit.CraftServer;
 
 
@@ -12,10 +11,9 @@ public class CraftMyEnderman extends CraftMyPet
         super(server, entityMyEnderman);
     }
 
-
-    public void setBlockData(short flag)
+    public short getBlockID()
     {
-        ((EntityMyEnderman) getHandle()).setBlockData(flag);
+        return ((EntityMyEnderman) getHandle()).getBlockID();
     }
 
     public void setBlockID(short flag)
@@ -23,19 +21,14 @@ public class CraftMyEnderman extends CraftMyPet
         ((EntityMyEnderman) getHandle()).setBlockID(flag);
     }
 
-    public void setScreaming(boolean flag)
-    {
-        ((EntityMyEnderman) getHandle()).setScreaming(flag);
-    }
-
-    public short getBlockID()
-    {
-        return ((EntityMyEnderman) getHandle()).getBlockID();
-    }
-
     public short getBlockData()
     {
         return ((EntityMyEnderman) getHandle()).getBlockData();
+    }
+
+    public void setBlockData(short flag)
+    {
+        ((EntityMyEnderman) getHandle()).setBlockData(flag);
     }
 
     public boolean isScreaming()
@@ -43,10 +36,15 @@ public class CraftMyEnderman extends CraftMyPet
         return ((EntityMyEnderman) getHandle()).isScreaming();
     }
 
+    public void setScreaming(boolean flag)
+    {
+        ((EntityMyEnderman) getHandle()).setScreaming(flag);
+    }
+
     @Override
     public String toString()
     {
-        return "CraftMyEnderman{isPet=" + getHandle().isMyPet() + ",owner=" + getOwner() + ",BlockID=" + getBlockID() + ",BlockData=" + getBlockID() +"}";
+        return "CraftMyEnderman{isPet=" + getHandle().isMyPet() + ",owner=" + getOwner() + ",BlockID=" + getBlockID() + ",BlockData=" + getBlockID() + "}";
     }
 
 

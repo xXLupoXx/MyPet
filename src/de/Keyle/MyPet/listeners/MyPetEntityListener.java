@@ -28,6 +28,9 @@ import de.Keyle.MyPet.entity.types.MyPet.LeashFlag;
 import de.Keyle.MyPet.entity.types.MyPet.PetState;
 import de.Keyle.MyPet.entity.types.MyPetType;
 import de.Keyle.MyPet.entity.types.chicken.CraftMyChicken;
+import de.Keyle.MyPet.entity.types.enderman.CraftMyEnderman;
+import de.Keyle.MyPet.entity.types.enderman.EntityMyEnderman;
+import de.Keyle.MyPet.entity.types.enderman.MyEnderman;
 import de.Keyle.MyPet.entity.types.irongolem.CraftMyIronGolem;
 import de.Keyle.MyPet.event.MyPetLeashEvent;
 import de.Keyle.MyPet.skill.skills.Behavior;
@@ -256,8 +259,8 @@ public class MyPetEntityListener implements Listener
                             }
                             else if (leashTarget instanceof Enderman)
                             {
-                                extendedInfo.setShort("BlockID", (short)((CraftEnderman) leashTarget).getHandle().getCarriedId());
-                                extendedInfo.setShort("BlockData", (short)((CraftEnderman) leashTarget).getHandle().getCarriedData());
+                                extendedInfo.setShort("BlockID", (short) ((CraftEnderman) leashTarget).getHandle().getCarriedId());
+                                extendedInfo.setShort("BlockData", (short) ((CraftEnderman) leashTarget).getHandle().getCarriedData());
                             }
                             inactiveMyPet.setInfo(extendedInfo);
 
@@ -295,11 +298,27 @@ public class MyPetEntityListener implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDamageResult(EntityDamageEvent event)
     {
+        if (event.getEntity() instanceof CraftMyEnderman)
+        {
+            MyEnderman myEnderman = (MyEnderman) ((CraftMyEnderman) event.getEntity()).getMyPet();
+            ((EntityMyEnderman) myEnderman.getCraftPet().getHandle()).setScreaming(true);
+            ((EntityMyEnderman) myEnderman.getCraftPet().getHandle()).setScreaming(false);
+        }
         if (!(event instanceof EntityDamageByEntityEvent) || event.isCancelled())
         {
             return;
         }
         EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
+
+        if(e.getDamager() instanceof CraftMyPet)
+        {
+            MyPet myPet = ((CraftMyPet)e.getDamager()).getMyPet();
+            if(HeroesDamageFix.damageFaked(myPet.getDamage()))
+            {
+                event.setDamage(myPet.getDamage());
+            }
+        }
+
         if (event.getEntity() instanceof LivingEntity)
         {
             if (e.getDamager() instanceof Player)
@@ -314,17 +333,17 @@ public class MyPetEntityListener implements Listener
                     }
 
                 }
-                else if (e.getDamager() instanceof CraftMyPet)
+            }
+            else if (e.getDamager() instanceof CraftMyPet)
+            {
+                MyPet myPet = ((CraftMyPet) e.getDamager()).getHandle().getMyPet();
+                if (myPet.getSkillSystem().hasSkill("Poison"))
                 {
-                    MyPet myPet = ((CraftMyPet) e.getDamager()).getHandle().getMyPet();
-                    if (myPet.getSkillSystem().hasSkill("Poison"))
+                    Poison poisonSkill = (Poison) myPet.getSkillSystem().getSkill("Poison");
+                    if (poisonSkill.getPoison())
                     {
-                        Poison poisonSkill = (Poison) myPet.getSkillSystem().getSkill("Poison");
-                        if (poisonSkill.getPoison())
-                        {
-                            PotionEffect effect = new PotionEffect(PotionEffectType.POISON, 5, 1);
-                            ((LivingEntity) event.getEntity()).addPotionEffect(effect);
-                        }
+                        PotionEffect effect = new PotionEffect(PotionEffectType.POISON, 5, 1);
+                        ((LivingEntity) event.getEntity()).addPotionEffect(effect);
                     }
                 }
             }
