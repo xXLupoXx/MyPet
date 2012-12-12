@@ -92,6 +92,8 @@ public class MyPetConfig
         setProperty("MyPet.Support.WorldGuard", true);
         setProperty("MyPet.Support.Citizens", true);
         setProperty("MyPet.Exp.Passive.PercentPerMonster", 25);
+        setProperty("MyPet.Exp.loss.Percent", 0);
+        setProperty("MyPet.Exp.loss.Fixed", 0.0);
 
         setProperty("MyPet.Leash.Item", 287);
         setProperty("MyPet.Skill.Control.Item", 287);
@@ -187,6 +189,9 @@ public class MyPetConfig
         useCitizens = config.getBoolean("MyPet.Support.Citizens", true);
         useHeroes = config.getBoolean("MyPet.Support.Heroes", true);
 
+        MyPetExperience.lossPercent = config.getInt("MyPet.Exp.loss.Percent");
+        MyPetExperience.lossFixed = config.getDouble("MyPet.Exp.loss.Fixed");
+
         for (MyPetType petType : MyPetType.values())
         {
             MyPet.setStartHP(petType.getMyPetClass(), config.getInt("MyPet.Pets." + petType.getTypeName() + ".HP", 20));
@@ -237,19 +242,19 @@ public class MyPetConfig
 
         if (config.getStringList("MyPet.exp.active") != null)
         {
-            int min;
-            int max;
+            double min;
+            double max;
             for (EntityType entityType : MyPetExperience.mobExp.keySet())
             {
                 min = 0;
                 max = 0;
                 if (config.contains("MyPet.Exp.Active." + entityType.getName() + ".Max"))
                 {
-                    max = config.getInt("MyPet.Exp.Active." + entityType.getName() + ".Max", 0);
+                    max = config.getDouble("MyPet.Exp.Active." + entityType.getName() + ".Max", 0.);
                 }
                 if (config.contains("MyPet.Exp.Active." + entityType.getName() + ".Min"))
                 {
-                    min = config.getInt("MyPet.Exp.Active." + entityType.getName() + ".Min", 0);
+                    min = config.getDouble("MyPet.Exp.Active." + entityType.getName() + ".Min", 0.);
                 }
                 if (min == max)
                 {
