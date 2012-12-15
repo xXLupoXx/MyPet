@@ -106,7 +106,7 @@ public class MyPetPlugin extends JavaPlugin
     {
         plugin = this;
 
-        new File(getPlugin().getDataFolder().getAbsolutePath() + File.separator + "skilltrees\\").mkdirs();
+        new File(getPlugin().getDataFolder().getAbsolutePath() + File.separator + "skilltrees" + File.separator).mkdirs();
         File delCraftBukkit = new File(getPlugin().getDataFolder().getPath() + File.separator + "craftbukkit.jar");
         if (delCraftBukkit.exists())
         {
@@ -299,20 +299,14 @@ public class MyPetPlugin extends JavaPlugin
             return;
         }
 
-        debugLogger.info("Pet start HP: ---------------");
+        debugLogger.info("Pet type: ----------");
         for (MyPetType myPetType : MyPetType.values())
         {
-            debugLogger.info("   " + myPetType.getTypeName() + ": " + MyPet.getStartHP(myPetType.getMyPetClass()));
-        }
-        debugLogger.info("Pet start damage: ----------");
-        for (MyPetType myPetType : MyPetType.values())
-        {
-            debugLogger.info("   " + myPetType.getTypeName() + ": " + MyPet.getStartDamage(myPetType.getMyPetClass()));
-        }
-        debugLogger.info("Pet food items: ----------");
-        for (MyPetType myPetType : MyPetType.values())
-        {
-            debugLogger.info("   " + myPetType.getTypeName() + ": " + MyPet.getFood(myPetType.getMyPetClass()));
+            debugLogger.info("  " + myPetType.getTypeName() + ":");
+            debugLogger.info("    damage:     " + MyPet.getStartDamage(myPetType.getMyPetClass()));
+            debugLogger.info("    startHP:    " + MyPet.getStartHP(myPetType.getMyPetClass()));
+            debugLogger.info("    food:       " + MyPet.getFood(myPetType.getMyPetClass()));
+            debugLogger.info("    leashFlags: " + MyPet.getLeashFlags(myPetType.getMyPetClass()));
         }
 
         MyPetPermissions.setup();
@@ -354,7 +348,7 @@ public class MyPetPlugin extends JavaPlugin
 
         if (MyPetConfig.sendMetrics)
         {
-            debugLogger.info("Metrics is activivated");
+            debugLogger.info("Metrics is activated");
             try
             {
                 Metrics metrics = new Metrics(this);
@@ -389,7 +383,7 @@ public class MyPetPlugin extends JavaPlugin
         }
         else
         {
-            debugLogger.info("Metrics not activivated");
+            debugLogger.info("Metrics not activated");
         }
 
         HeroesDamageFix.reset();
