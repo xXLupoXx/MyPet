@@ -71,7 +71,7 @@ public class MyPetLanguage
         addString("Msg_AddHP", "MyPet.Message.addhp", "%aqua%%petname%%white% has now a max health of %maxhealth%HP");
         addString("Msg_AddDemage", "MyPet.Message.adddemage", "%aqua%%petname%%white% has now %dmg% bonusdemage");
         addString("Msg_PetIsGone", "MyPet.Message.petisgone", "%aqua%%petname%%white% is %red%gone%white% and will never come back . . .");
-        addString("Msg_DeathMessage", "MyPet.Message.deathmessage.text", "%aqua%%petname%%white% was killed by: ");
+        addString("Msg_DeathMessage", "MyPet.Message.deathmessage", "%aqua%%petname%%white% was killed by: ");
         addString("Msg_RespawnIn", "MyPet.Message.respawnin", "%aqua%%petname%%white% respawn in %gold%%time%%white% sec");
         addString("Msg_OnRespawn", "MyPet.Message.onrespawn", "%aqua%%petname%%white% respawned");
         addString("Msg_CallDead", "MyPet.Message.callwhendead", "%aqua%%petname%%white% is %red%dead%white% and will respawn in %gold%%time%%white% sec");
@@ -91,7 +91,6 @@ public class MyPetLanguage
         addString("Msg_InventorySwimming", "MyPet.Message.inventorywhileswimming", "You can't open the inventory while %aqua%%petname%%white% is swimming!");
         addString("Msg_InventoryCreative", "MyPet.Message.inventorywhileincreative", "You can't open the inventory while you are in creative mode");
         addString("Msg_NoInventory", "MyPet.Message.noinventory", "%aqua%%petname%%white% doesn't have an inventory.");
-        addString("Msg_CreativeInventory", "MyPet.Message.creativeinventory", "You can't open %aqua%%petname%%white%'s inventory in Creative gamemode.");
         addString("Msg_PickButNoInventory", "MyPet.Message.pickupbutnoinventory", "%aqua%%petname%%white% could pickup items but has no inventoy.");
         addString("Msg_NoSkill", "MyPet.Message.noskill", "%aqua%%petname%%white% doesn't know the skill %skill%.");
         addString("Msg_Skills", "MyPet.Message.skills", "%aqua%%petname%%white%'s skills: %skilltree%");
