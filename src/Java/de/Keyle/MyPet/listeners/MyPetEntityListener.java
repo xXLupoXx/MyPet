@@ -73,9 +73,17 @@ public class MyPetEntityListener implements Listener
 
             if (event.getEntity() instanceof CraftMyPet)
             {
-                if (e.getDamager() instanceof Player)
+                if (e.getDamager() instanceof Player || (e.getDamager() instanceof Arrow && ((Arrow) e.getDamager()).getShooter() instanceof Player))
                 {
-                    Player damager = (Player) e.getDamager();
+                    Player damager;
+                    if (e.getDamager() instanceof Arrow)
+                    {
+                        damager = (Player) ((Arrow) e.getDamager()).getShooter();
+                    }
+                    else
+                    {
+                        damager = (Player) e.getDamager();
+                    }
                     MyPet myPet = MyPetList.getMyPet(event.getEntity().getEntityId());
                     if (myPet.getCraftPet().getHandle().isRidden())
                     {
@@ -157,17 +165,12 @@ public class MyPetEntityListener implements Listener
                             return;
                         }
 
-                        boolean willBeLeashed = false;
-
+                        boolean willBeLeashed = true;
                         List<LeashFlag> leashFlags = MyPet.getLeashFlags(MyPetType.getMyPetTypeByEntityType(leashTarget.getType()).getMyPetClass());
 
                         for (LeashFlag flag : leashFlags)
                         {
-                            if (flag == LeashFlag.None)
-                            {
-                                willBeLeashed = true;
-                            }
-                            else if (flag == LeashFlag.Adult)
+                            if (flag == LeashFlag.Adult)
                             {
                                 if (leashTarget instanceof Ageable)
                                 {
@@ -200,12 +203,28 @@ public class MyPetEntityListener implements Listener
                                     willBeLeashed = ((IronGolem) leashTarget).isPlayerCreated();
                                 }
                             }
+                            else if (flag == LeashFlag.Wild)
+                            {
+                                if (leashTarget instanceof IronGolem)
+                                {
+                                    willBeLeashed = !((IronGolem) leashTarget).isPlayerCreated();
+                                }
+                                else if (leashTarget instanceof Tameable)
+                                {
+                                    willBeLeashed = !((Tameable) leashTarget).isTamed();
+                                }
+                            }
                             else if (flag == LeashFlag.Tamed)
                             {
                                 if (leashTarget instanceof Tameable)
                                 {
                                     willBeLeashed = ((Tameable) leashTarget).isTamed();
                                 }
+                            }
+                            if (!willBeLeashed || flag == LeashFlag.None)
+                            {
+                                willBeLeashed = false;
+                                break;
                             }
                         }
 
@@ -468,14 +487,14 @@ public class MyPetEntityListener implements Listener
         if (event.getEntity() instanceof CraftMyPet)
         {
             MyPet myPet = ((CraftMyPet) event.getEntity()).getMyPet();
-            String killer = MyPetUtil.setColors(MyPetLanguage.getString("Unknown"));
+            String killer = "Unknow";
             if (event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent)
             {
                 EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event.getEntity().getLastDamageCause();
 
                 if (e.getDamager().getType() == EntityType.PLAYER)
                 {
-                    if (e.getDamager() == myPet.getOwner())
+                    if (e.getDamager() == myPet.getOwner().getPlayer())
                     {
                         killer = "You";
                     }
@@ -487,19 +506,38 @@ public class MyPetEntityListener implements Listener
                 else if (e.getDamager().getType() == EntityType.WOLF)
                 {
                     Wolf w = (Wolf) e.getDamager();
+                    killer = "Wolf";
                     if (w.isTamed())
                     {
-                        killer = "Wolf (" + w.getOwner().getName() + ')';
-                    }
-                    else
-                    {
-                        killer = "Wolf";
+                        killer += " (" + w.getOwner().getName() + ')';
                     }
                 }
                 else if (e.getDamager() instanceof CraftMyPet)
                 {
                     CraftMyPet craftMyPet = (CraftMyPet) e.getDamager();
                     killer = craftMyPet.getMyPet().petName + " (" + craftMyPet.getOwner().getName() + ')';
+                }
+                else if (e.getDamager() instanceof Arrow)
+                {
+                    Arrow arrow = (Arrow) e.getDamager();
+                    killer = "Arrow (";
+                    MyPetUtil.getLogger().info("shoter: " + arrow.getShooter());
+                    if (arrow.getShooter() instanceof Player)
+                    {
+                        if (arrow.getShooter() == myPet.getOwner().getPlayer())
+                        {
+                            killer += "You";
+                        }
+                        else
+                        {
+                            killer += ((Player) e.getDamager()).getName();
+                        }
+                    }
+                    else
+                    {
+                        killer += e.getDamager().getType().getName();
+                    }
+                    killer += ")";
                 }
                 else
                 {
