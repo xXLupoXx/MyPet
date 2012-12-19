@@ -33,6 +33,8 @@ public class MyPetPlayer implements Scheduler
     private static List<MyPetPlayer> playerList = new ArrayList<MyPetPlayer>();
 
     private String playerName;
+    private boolean showLowHPMessage = true;
+    private boolean DataChanged = false;
 
     private MyPetPlayer(String playerName)
     {
@@ -42,6 +44,26 @@ public class MyPetPlayer implements Scheduler
     public String getName()
     {
         return playerName;
+    }
+
+    public void setShowLowHPMessage(boolean flag)
+    {
+        showLowHPMessage = flag;
+    }
+
+    public boolean getShowLowHPMessage()
+    {
+        return showLowHPMessage;
+    }
+
+    public boolean isDataChanged()
+    {
+        return DataChanged;
+    }
+
+    public void setDataChanged()
+    {
+        DataChanged = true;
     }
 
     public boolean isOnline()
