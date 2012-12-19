@@ -221,6 +221,13 @@ public class MyPetEntityListener implements Listener
                                     willBeLeashed = ((Tameable) leashTarget).isTamed();
                                 }
                             }
+                            else if (flag == LeashFlag.CanBreed)
+                            {
+                                if (leashTarget instanceof Ageable)
+                                {
+                                    willBeLeashed = ((Ageable) leashTarget).canBreed();
+                                }
+                            }
                             if (!willBeLeashed || flag == LeashFlag.None)
                             {
                                 willBeLeashed = false;
@@ -274,14 +281,14 @@ public class MyPetEntityListener implements Listener
                                 extendedInfo.setBoolean("Baby", ((Zombie) leashTarget).isBaby());
                                 extendedInfo.setBoolean("Villager", ((Zombie) leashTarget).isVillager());
                             }
-                            else if (leashTarget instanceof Ageable)
-                            {
-                                extendedInfo.setBoolean("Baby", !((Ageable) leashTarget).isAdult());
-                            }
                             else if (leashTarget instanceof Enderman)
                             {
                                 extendedInfo.setShort("BlockID", (short) ((CraftEnderman) leashTarget).getHandle().getCarriedId());
                                 extendedInfo.setShort("BlockData", (short) ((CraftEnderman) leashTarget).getHandle().getCarriedData());
+                            }
+                            if (leashTarget instanceof Ageable)
+                            {
+                                extendedInfo.setBoolean("Baby", !((Ageable) leashTarget).isAdult());
                             }
                             inactiveMyPet.setInfo(extendedInfo);
 
