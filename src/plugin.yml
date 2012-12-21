@@ -51,9 +51,6 @@ commands:
     aliases: [pcst, petcst]
     description: Chooses a skilltree.
     usage: '/<command> <SkillTreeName>'
-  petshowlowleashhp:
-    aliases: [plowhp]
-    description: Toggles low HP message
 
 permissions:
   MyPet.user.leash.*:

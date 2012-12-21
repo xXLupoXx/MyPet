@@ -205,15 +205,7 @@ public class MyPetEntityListener implements Listener
                             }
                             else if (flag == LeashFlag.LowHp)
                             {
-                                if(leashTarget.getHealth() <= 2)
-                                {
-                                    willBeLeashed = true;
-
-                                    if(MyPetPermissions.has(damager, "MyPet.user.leash." + MyPetType.getMyPetTypeByEntityType(leashTarget.getType()).getTypeName()) && MyPetPlayer.getMyPetPlayer(damager.getName()).getShowLowHPMessage())
-                                    {
-                                        damager.sendMessage(MyPetUtil.setColors(MyPetLanguage.getString("Msg_NowLeashable")));
-                                    }
-                                }
+                                willBeLeashed = leashTarget.getHealth() <= 2;
                             }
                             else if (flag == LeashFlag.UserCreated)
                             {
